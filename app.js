@@ -20,7 +20,7 @@ app.post('/', (req, res) => {
     request
     .post('https://' + mailchimpInstance + '.api.mailchimp.com/3.0/lists/' + listUniqueId + '/members/')
     .set('Content-Type', 'application/json;charset=utf-8')
-    .set('Authorization', 'Basic ' + new Buffer('any:' + mailchimpApiKey ).toString('base64'))
+    .set('Authorization', 'Basic ' + new Buffer.from('any:' + mailchimpApiKey ).toString('base64'))
     .send({
       'email_address': req.body.email,
       'status': 'subscribed',
@@ -30,10 +30,10 @@ app.post('/', (req, res) => {
       }
     })
     .end((err, response)=> {
-        if (response.status < 300 || (response.status === 400 && response.body.title === "Member Exists")) {
-          res.sendFile(__dirname + '/success.html');
-        } else {
-          res.sendFile(__dirname + '/error.html');
+        if (response.status < 300) {
+          res.send('Signed Up');
+        } else if(response.status === 400 || response.body.title === "Member Exists") {
+          res.send('Oops!');
         }
     });
 });
